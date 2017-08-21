@@ -10,5 +10,4 @@ public class Automata {
 	Set<Character> z; //Множество заключительных состояний
 	
 	
-
 }

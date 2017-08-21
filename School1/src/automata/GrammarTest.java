@@ -45,5 +45,8 @@ public class GrammarTest {
 		
 		System.out.println(p);
 		Grammar g = new Grammar(vT,vN,p,s);
+		
+		
+		Automata m = GrammarToAutomataConverter.convert(g);
 	}
 }
