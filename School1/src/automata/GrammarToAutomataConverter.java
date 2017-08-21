@@ -9,11 +9,21 @@ public class GrammarToAutomataConverter {
 
 
 	public static Automata convert(Grammar g) {
-		
 		Set<Function> f = new HashSet<>(); //Множество правил
 		Set<Character> z = new HashSet<>(); //Множество заключительных состояний
 	
+		Set<Character> q = new HashSet<>(); //Множество состояний
+		Set<Character> t = new HashSet<>(); //Множество символов
+		Set<Character> h = new HashSet<>(); //Множество начальных состояний автомата
+
+		//Шаг 2
+		q.addAll(g.vN);
+		t.addAll(g.vT);
+		h.add(g.s);
 		
+		
+		
+		//Выполнение шагов 1, 3, 4 и 5
 		for (Rule rule : g.p) {
 			if (rule.right.length == 2) {
 				f.add(new Function(rule.left,rule.right[0],rule.right[1]));
@@ -23,7 +33,7 @@ public class GrammarToAutomataConverter {
 			
 		}
 		
-		return null;
+		return new Automata(q,t,f,h,z);
 	}
 
 	
@@ -53,14 +63,14 @@ public class GrammarToAutomataConverter {
 	}
 
 	//Возвращает новый нетерминал, не содержавшийся в грамматике.  
-	private static char getNewNonTerminal(Grammar g) {
+	static char getNewNonTerminal(Grammar g) {
 		char result = 'N';
 		Random r = new Random();
 		while (g.vN.contains(result)) {
 			int charInt = 'A' + r.nextInt('Z' - 'A' + 1);
 			result = (char)charInt; 
 		}
-		return 0;
+		return result;
 	}
 
 
@@ -80,8 +90,6 @@ public class GrammarToAutomataConverter {
 		}
 		return (rule.right[0] == Grammar.EMPTY) && (rule.left == g.s);
 	}
-	
-	
 	
 	
 }

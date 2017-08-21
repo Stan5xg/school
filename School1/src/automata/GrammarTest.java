@@ -46,7 +46,10 @@ public class GrammarTest {
 		System.out.println(p);
 		Grammar g = new Grammar(vT,vN,p,s);
 		
+		System.out.println(GrammarToAutomataConverter.getNewNonTerminal(g));
+		
 		
 		Automata m = GrammarToAutomataConverter.convert(g);
+		System.out.println(m);
 	}
 }
