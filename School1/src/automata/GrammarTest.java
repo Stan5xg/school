@@ -43,13 +43,18 @@ public class GrammarTest {
 		Character s = 'X';
 	
 		
-		System.out.println(p);
 		Grammar g = new Grammar(vT,vN,p,s);
-		
-		System.out.println(GrammarToAutomataConverter.getNewNonTerminal(g));
-		
 		
 		Automata m = GrammarToAutomataConverter.convert(g);
 		System.out.println(m);
+		Table t = new Table(m);
+//		System.out.println(t.getValueAt(0, 0));
+		
+		Graphics.createAndShowGUI(t);
+		
+
+
+		
+		
 	}
 }

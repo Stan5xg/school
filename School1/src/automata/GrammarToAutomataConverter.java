@@ -52,14 +52,15 @@ public class GrammarToAutomataConverter {
 	//Производит конструирование функции перехода для правил вида А->a (без нетерминала в правой части)   
 	private static void convertRuleWithTerminalOnlyChecked(Grammar g, Set<Character> z, Set<Function> f, Rule rule) {
 		char resultState = getNewNonTerminal(g); //Новый символ 
-
+		
 		for (Rule otherRule : g.p) {
 			if (sameExceptNonTerminal(rule, otherRule)) {
 				z.add(rule.right[1]);
-			} else {
-				f.add(new Function(rule.left,rule.right[0],resultState));
+				break;
 			}
 		}
+
+		f.add(new Function(rule.left,rule.right[0],resultState));
 	}
 
 	//Возвращает новый нетерминал, не содержавшийся в грамматике.  
