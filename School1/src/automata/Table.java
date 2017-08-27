@@ -1,5 +1,7 @@
 package automata;
 
+import java.awt.Component;
+import java.awt.Font;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -7,7 +9,12 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JLabel;
+import javax.swing.JTable;
+import javax.swing.UIManager;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
 import javax.tools.ToolProvider;
 
 public class Table extends AbstractTableModel {
@@ -18,7 +25,9 @@ public class Table extends AbstractTableModel {
 	private static final double COL_TRESHOLD = 0.75;
 
 	Map<Chars, Integer> headIndex = new LinkedHashMap<>();
+	List<Chars> header = new ArrayList<>();
 	Map<Chars, Integer> leftIndex = new LinkedHashMap<>();
+	List<Chars> lefter = new ArrayList<>();
 	
 	Chars[][] data = new Chars[DEFAULT_ROW_SIZE][DEFAULT_COL_SIZE];
 	int colSize = 0;
@@ -49,6 +58,7 @@ public class Table extends AbstractTableModel {
 		Integer rowIndex = leftIndex.get(symbol);
 		if (rowIndex == null) {
 			leftIndex.put(symbol, rowSize++);
+			lefter.add(symbol);
 			checkSize();
 			rowIndex = rowSize;
 		} 
@@ -56,11 +66,13 @@ public class Table extends AbstractTableModel {
 		Integer colIndex = headIndex.get(currentState);
 		if (colIndex == null) {
 			headIndex.put(currentState, colSize++);
+			header.add(currentState);
 			checkSize();
 			colIndex = colSize;
 		} 
 		
-		System.out.println(rowIndex + " : " + colIndex);
+		System.out.println("row: " + rowIndex + " col: " + colIndex);
+		
 		Chars chars = data[rowIndex][colIndex];
 		if (chars == null) {
 			data[rowIndex][colIndex] = resultState;
@@ -117,12 +129,24 @@ public class Table extends AbstractTableModel {
 
 	@Override
 	public int getColumnCount() {
-		return colSize;
+		return colSize+1;
 	}
 
 	@Override
 	public Object getValueAt(int rowIndex, int columnIndex) {
-		return data[rowIndex][columnIndex];
+		if (columnIndex > 0) 
+			return data[rowIndex][columnIndex-1];
+		else {
+			return lefter.get(rowIndex);
+		}
+	}
+	
+	@Override
+	public String getColumnName(int column) {
+		if (column > 0) {
+			return header.get(column-1).toString();			
+		} else 
+			return "";
 	}
 	
 	public static void main(String[] args) {
@@ -133,5 +157,6 @@ public class Table extends AbstractTableModel {
 		table.headIndex.put(new Chars('C'), 3);
 		System.out.println(table.headIndex);
 	}
-
+	
+	
 }

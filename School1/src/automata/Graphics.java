@@ -2,11 +2,18 @@ package automata;
 
 import javax.swing.JPanel;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.UIManager;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 
+import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -20,6 +27,13 @@ public class Graphics  extends JPanel{
 
  
         JTable table = new JTable(tab);
+        
+        
+        table.getColumnModel().getColumn(0).setCellRenderer(new RowNumberRenderer());
+        
+        
+        
+//        table = new RowNumberTable(table);
 //        System.out.println(table.getTableHeader());
         table.setPreferredScrollableViewportSize(new Dimension(500, 100));
         table.setFillsViewportHeight(true);
@@ -64,6 +78,41 @@ public class Graphics  extends JPanel{
     		}
     	});
 	}
+    
+    private static class RowNumberRenderer extends DefaultTableCellRenderer
+	{
+		public RowNumberRenderer()
+		{
+			setHorizontalAlignment(JLabel.CENTER);
+		}
+
+		public Component getTableCellRendererComponent(
+			JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column)
+		{
+			if (table != null)
+			{
+				JTableHeader header = table.getTableHeader();
+
+				if (header != null)
+				{
+					setForeground(header.getForeground());
+					setBackground(header.getBackground());
+					setFont(header.getFont());
+				}
+			}
+
+			if (isSelected)
+			{
+				setFont( getFont().deriveFont(Font.BOLD) );
+			}
+
+			setText((value == null) ? "" : value.toString());
+			setBorder(UIManager.getBorder("TableHeader.cellBorder"));
+
+			return this;
+		}
+	}
+
  
  
 }
