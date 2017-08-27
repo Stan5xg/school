@@ -1,6 +1,7 @@
 package automata;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -9,12 +10,12 @@ public class GrammarToAutomataConverter {
 
 
 	public static Automata convert(Grammar g) {
-		Set<Function> f = new HashSet<>(); //Множество правил
-		Set<Character> z = new HashSet<>(); //Множество заключительных состояний
+		Set<Function> f = new LinkedHashSet<>(); //Множество правил
+		Set<Character> z = new LinkedHashSet<>(); //Множество заключительных состояний
 	
-		Set<Character> q = new HashSet<>(); //Множество состояний
-		Set<Character> t = new HashSet<>(); //Множество символов
-		Set<Character> h = new HashSet<>(); //Множество начальных состояний автомата
+		Set<Character> q = new LinkedHashSet<>(); //Множество состояний
+		Set<Character> t = new LinkedHashSet<>(); //Множество символов
+		Set<Character> h = new LinkedHashSet<>(); //Множество начальных состояний автомата
 
 		//Шаг 2
 		q.addAll(g.vN);

@@ -107,7 +107,7 @@ public class Graphics  extends JPanel{
 			}
 
 			setText((value == null) ? "" : value.toString());
-			setBorder(UIManager.getBorder("TableHeader.cellBorder"));
+//			setBorder(UIManager.getBorder("TableHeader.cellBorder"));
 
 			return this;
 		}

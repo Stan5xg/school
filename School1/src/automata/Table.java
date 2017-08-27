@@ -51,27 +51,28 @@ public class Table extends AbstractTableModel {
 
 	private void add(char currState, char sym, char resState) {
 		System.out.print(currState + "," + sym + " -> "+ resState);
+		
 		Chars symbol = new Chars(sym);
 		Chars currentState = new Chars(currState);
 		Chars resultState = new Chars(resState);
 		
 		Integer rowIndex = leftIndex.get(symbol);
 		if (rowIndex == null) {
+			rowIndex = rowSize;
 			leftIndex.put(symbol, rowSize++);
 			lefter.add(symbol);
 			checkSize();
-			rowIndex = rowSize;
 		} 
 		
 		Integer colIndex = headIndex.get(currentState);
 		if (colIndex == null) {
+			colIndex = colSize;
 			headIndex.put(currentState, colSize++);
 			header.add(currentState);
 			checkSize();
-			colIndex = colSize;
 		} 
 		
-		System.out.println("row: " + rowIndex + " col: " + colIndex);
+		System.out.println(" row: " + rowIndex + " col: " + colIndex);
 		
 		Chars chars = data[rowIndex][colIndex];
 		if (chars == null) {
