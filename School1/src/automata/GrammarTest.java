@@ -25,6 +25,7 @@ public class GrammarTest {
 
 				add(new Rule('W','0','W'));
 				add(new Rule('W','1','W'));
+				
 				add(new Rule('W','#'));
 
 				add(new Rule('V','&','Z'));
@@ -43,17 +44,17 @@ public class GrammarTest {
 		Character s = 'X';
 	
 		
+		
 		Grammar g = new Grammar(vT,vN,p,s);
 		
 		Automata m = GrammarToAutomataConverter.convert(g);
-		System.out.println(m);
 		Table t = new Table(m);
-//		System.out.println(t.getValueAt(0, 0));
-		
-		Graphics.createAndShowGUI(t);
+		Table t2 = UndeterminedToDetermined.convert(t);
 		
 
-
+		
+		
+		Graphics.createAndShowGUI(t2);
 		
 		
 	}

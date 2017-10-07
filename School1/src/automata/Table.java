@@ -1,24 +1,21 @@
 package automata;
 
-import java.awt.Component;
-import java.awt.Font;
+import java.awt.IllegalComponentStateException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
-import javax.swing.JLabel;
-import javax.swing.JTable;
-import javax.swing.UIManager;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.JTableHeader;
-import javax.tools.ToolProvider;
 
-public class Table extends AbstractTableModel {
+public class Table extends AbstractTableModel{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4451769843472682967L;
 	private static final int DEFAULT_ROW_SIZE = 10;
 	private static final int DEFAULT_COL_SIZE = 10;
 	private static final double ROW_TRESHOLD = 0.75;
@@ -30,49 +27,53 @@ public class Table extends AbstractTableModel {
 	List<Chars> lefter = new ArrayList<>();
 	
 	Chars[][] data = new Chars[DEFAULT_ROW_SIZE][DEFAULT_COL_SIZE];
+	/*
+	 *  	col1 col2 col3
+	 *  row1
+	 *  row2
+	 *  row3
+	 *  
+	 *  data[rowN][colN]
+	 */
 	int colSize = 0;
 	int rowSize = 0;
-	
+		
+	public Table() {
+	}
 	
 	public Table(Automata m) {
-		for (Function function : m.f) {
-			add(function.currentState, function.symbol, function.resultState); 
+		for (Function f : m.f) {
+			add(f);
 		}
-	
+		for (char c: m.q) {
+			addToHead(new Chars(c));
+		}
+		for (char c: m.t) {
+			addToRow(new Chars(c));
+		}
 	}
-	
-	
-	
-	public Table() {
-		// TODO Auto-generated constructor stub
+
+
+
+	public void add(Function f) {
+			add(f.currState, f.symbol, f.resultState);					
 	}
 
-
-
-	private void add(char currState, char sym, char resState) {
-		System.out.print(currState + "," + sym + " -> "+ resState);
-		
-		Chars symbol = new Chars(sym);
-		Chars currentState = new Chars(currState);
-		Chars resultState = new Chars(resState);
+	public void add(Chars currentState, Chars symbol, Chars resultState) {
 		
 		Integer rowIndex = leftIndex.get(symbol);
 		if (rowIndex == null) {
 			rowIndex = rowSize;
-			leftIndex.put(symbol, rowSize++);
-			lefter.add(symbol);
-			checkSize();
+			addToRow(symbol);
 		} 
 		
 		Integer colIndex = headIndex.get(currentState);
+		
 		if (colIndex == null) {
 			colIndex = colSize;
-			headIndex.put(currentState, colSize++);
-			header.add(currentState);
-			checkSize();
+			addToHead(currentState);
 		} 
 		
-		System.out.println(" row: " + rowIndex + " col: " + colIndex);
 		
 		Chars chars = data[rowIndex][colIndex];
 		if (chars == null) {
@@ -81,8 +82,28 @@ public class Table extends AbstractTableModel {
 			chars.add(resultState);
 		}
 		
-		System.out.println("Head:" + headIndex);
-		System.out.println("Left:" + leftIndex);
+	}
+
+
+
+	private void addToHead(Chars currentState) {
+		if (headIndex.containsKey(currentState)) {
+			return;
+		}
+		headIndex.put(currentState, colSize++);
+		header.add(currentState);
+		checkSize();
+	}
+
+
+
+	private void addToRow(Chars symbol) {
+		if (leftIndex.containsKey(symbol)) {
+			return;
+		}
+		leftIndex.put(symbol, rowSize++);
+		lefter.add(symbol);
+		checkSize();
 	}
 
 
@@ -125,12 +146,12 @@ public class Table extends AbstractTableModel {
 
 	@Override
 	public int getRowCount() {
-		return rowSize;
+		return lefter.size();
 	}
 
 	@Override
 	public int getColumnCount() {
-		return colSize+1;
+		return header.size()+1;
 	}
 
 	@Override
@@ -150,14 +171,120 @@ public class Table extends AbstractTableModel {
 			return "";
 	}
 	
-	public static void main(String[] args) {
-		Chars chars = new Chars('B');
-		Table table = new Table();
-		table.headIndex.put(new Chars('A'), 1);
-		table.headIndex.put(new Chars('B'), 2);
-		table.headIndex.put(new Chars('C'), 3);
-		System.out.println(table.headIndex);
+
+	public boolean hasHead(Chars currentState) {
+		return header.contains(currentState);
 	}
+
+	public Column<Function> column(int columnIndex) {
+		return new Column<Function>() {
+
+			@Override
+			public Iterator<Function> iterator() {
+				return new Iterator<Function>(){					
+					int i = 0;
+
+					@Override
+					public boolean hasNext() {
+						// TODO Auto-generated method stub
+						return i < lefter.size();
+					}
+
+					@Override
+					public Function next() {
+						Function result = new Function(header.get(columnIndex), lefter.get(i), data[i++][columnIndex]);
+						return result;
+					}
+					
+				};
+			}
+		};
+	}
+
+	public Column<Function> column(Chars head) {
+		
+		if (head == null || head.size() < 1) {
+			return null;
+		}
+		
+		
+		if (hasHead(head)) {
+			return column(headIndex.get(head));
+		}			
+		
+		
+		return new Column<Function>() {
+
+			@Override
+			public Iterator<Function> iterator() {
+				return new Iterator<Function>(){					
+					int i = 0;
+
+					@Override
+					public boolean hasNext() {
+						// TODO Auto-generated method stub
+						return i < lefter.size();
+					}
+
+					@Override
+					public Function next() {
+						Function resultFunction = new Function();
+						Chars symbol = lefter.get(i);
+						for (Chars headChar : head) {
+							int headCharIndex = headIndex.get(headChar);
+							
+							//Chars currState = new Chars(header.get(headCharIndex));
+							
+							Chars resultState = data[i][headCharIndex];
+							
+							if (resultState != null) {
+								resultState = new Chars(resultState);
+							}
+							
+							resultFunction.add(head, symbol, resultState);
+						}
+						i++;
+						return resultFunction;
+					}
+					
+				};
+			}
+		};
+	}
+	
+	
+	
+	
+	
+	static Chars getNewChars(List<Chars> existing) {
+		Chars result = new Chars('N');
+		Random r = new Random();
+		while (existing.contains(result)) {
+			int charInt = 'A' + r.nextInt('Z' - 'A' + 1);
+			result = new Chars((char)charInt); 
+		}
+		return result;
+	}
+
+	public void replaceDoubleSymbols() {
+		for (Chars headChars : header) {
+			if (headChars.size() > 1) {
+				headChars.replace(getNewChars(header));
+			}
+		}
+	}
+
+	public void replaceWithActualHeader(Function function) {
+		Chars resState = function.resultState;
+		Integer iHead = headIndex.get(resState);
+		if (iHead != null) {
+			function.resultState = header.get(iHead);
+		}
+		
+	}
+
+
+	
 	
 	
 }

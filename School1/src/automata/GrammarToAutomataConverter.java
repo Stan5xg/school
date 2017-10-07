@@ -29,7 +29,7 @@ public class GrammarToAutomataConverter {
 			if (rule.right.length == 2) {
 				f.add(new Function(rule.left,rule.right[0],rule.right[1]));
 			} else {
-				convertRuleWithTerminalOnly(g, z, f, rule);
+				convertRuleWithTerminalOnly(g, z, q, f, rule);
 			}
 			
 		}
@@ -40,18 +40,18 @@ public class GrammarToAutomataConverter {
 	
 
 	//Производит конструирование функции перехода для правил вида А->a или S->ε	 
-	private static void convertRuleWithTerminalOnly(Grammar g, Set<Character> z, Set<Function> f,  Rule rule) {
+	private static void convertRuleWithTerminalOnly(Grammar g, Set<Character> z, Set<Character> q, Set<Function> f,  Rule rule) {
 
 		if (isSToEmpty(g, rule)) {
 			z.add(rule.left);
 		} else {
-			convertRuleWithTerminalOnlyChecked(g, z, f, rule);
+			convertRuleWithTerminalOnlyChecked(g, z, q, f, rule);
 		}
 	}
 
 	
 	//Производит конструирование функции перехода для правил вида А->a (без нетерминала в правой части)   
-	private static void convertRuleWithTerminalOnlyChecked(Grammar g, Set<Character> z, Set<Function> f, Rule rule) {
+	private static void convertRuleWithTerminalOnlyChecked(Grammar g, Set<Character> z, Set<Character> q, Set<Function> f, Rule rule) {
 		char resultState = getNewNonTerminal(g); //Новый символ 
 		
 		for (Rule otherRule : g.p) {
@@ -60,7 +60,9 @@ public class GrammarToAutomataConverter {
 				break;
 			}
 		}
-
+		
+		q.add(resultState);
+		z.add(resultState);
 		f.add(new Function(rule.left,rule.right[0],resultState));
 	}
 

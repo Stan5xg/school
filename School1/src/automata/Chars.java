@@ -1,58 +1,47 @@
 package automata;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
-public class Chars {
-    private int hash; 
+
+public class Chars implements Iterable<Chars> {
 	
-    private char value[];
+    private Set<Character> values = new HashSet<>();
     
-    public Chars(char... chars) {
-		value = chars;
+    public Chars(Character... chars) {
+    	values.addAll(Arrays.asList(chars));
 	}
+    
+    public Chars(Chars chars) {
+    	if (chars != null)
+    		this.values.addAll(chars.values);
+    }
+
+	public int size() {
+    	return values.size();
+    }
     
     @Override
     public int hashCode() {
-        int h = hash;
-        if (h == 0 && value.length > 0) {
-            char val[] = value;
-
-            for (int i = 0; i < value.length; i++) {
-                h = 31 * h + val[i];
-            }
-            hash = h;
-        }
-        return h;
+    	return values.hashCode();
     }
     
     @Override
     public boolean equals(Object anObject) {
-        if (this == anObject) {
-            return true;
+        if (!(anObject instanceof Chars)) {
+        	return false;
         }
-        if (anObject instanceof Chars) {
-            Chars anotherString = (Chars)anObject;
-            int n = value.length;
-            if (n == anotherString.value.length) {
-                char v1[] = value;
-                char v2[] = anotherString.value;
-                int i = 0;
-                while (n-- != 0) {
-                    if (v1[i] != v2[i])
-                        return false;
-                    i++;
-                }
-                return true;
-            }
-        }
-        return false;
+        Chars otherChars = (Chars)anObject; 
+        return values.equals(otherChars.values);
     }
     
     @Override
     public String toString() {
     	StringBuffer result = new StringBuffer();
-    	for (char c : value) {
-			result.append(c);
+    	for (Character c : values) {
+			result.append(c.toString());
 			result.append(", ");
 		}
     	result.replace(result.length()-2, result.length(), "");
@@ -60,17 +49,41 @@ public class Chars {
     }
 
 	public void add(Chars c) {
-		char[] oldVal = value;
-		value = Arrays.copyOf(oldVal, oldVal.length+c.value.length);		
-		System.arraycopy(c.value, 0, value, oldVal.length, c.value.length);
+		if (c != null) {
+			values.addAll(c.values);
+		}
 	}
 	
 	public static void main(String[] args) {
-		Chars chars = new Chars('a');
-		Chars chars1 = new Chars('a');
+		Chars chars = new Chars('b');
+		Chars chars1 = new Chars('b');
 		
 		System.out.println(chars.hashCode() + " " + chars1.hashCode());
 		System.out.println(chars1.equals(chars));
+	}
+
+
+
+	@Override
+	public Iterator<Chars> iterator() {
+		return new Iterator<Chars>() {
+			
+			Iterator<Character> valuesItereator = values.iterator();
+			
+			@Override
+			public Chars next() {
+				return new Chars(valuesItereator.next());
+			}
+			
+			@Override
+			public boolean hasNext() {
+				return valuesItereator.hasNext();
+			}
+		};
+	}
+
+	public void replace(Chars newChars) {
+		this.values = newChars.values;		
 	}
 	
 }
